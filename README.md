@@ -1,6 +1,6 @@
 # Alignment & Safety Benchmarking Harness
 
-[![CI](https://github.com/aatmangupta/alignment-safety-benchmark/actions/workflows/ci.yml/badge.svg)](https://github.com/aatmangupta/alignment-safety-benchmark/actions/workflows/ci.yml)
+[![CI](https://github.com/Aatman004/Model-Alignment-Safety-Benchmarking/actions/workflows/ci.yml/badge.svg)](https://github.com/Aatman004/Model-Alignment-Safety-Benchmarking/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![PyTorch CUDA](https://img.shields.io/badge/PyTorch-CUDA%20RTX%204060-76B900.svg)](https://pytorch.org/)
@@ -68,8 +68,8 @@ Frontier AI Safety and Alignment research demands reproducible, transparent empi
 
 ```bash
 # Clone the repository
-git clone https://github.com/aatmangupta/alignment-safety-benchmark.git
-cd alignment-safety-benchmark
+git clone https://github.com/Aatman004/Model-Alignment-Safety-Benchmarking.git
+cd Model-Alignment-Safety-Benchmarking
 
 # Set up virtual environment
 python -m venv .venv
