@@ -1,13 +1,14 @@
 """Command Line Interface for the Alignment & Safety Benchmarking Harness."""
 
-from datetime import datetime
 import json
-from pathlib import Path
 import time
+from datetime import datetime
+from pathlib import Path
 from typing import Optional
+
+import typer
 from rich.console import Console
 from rich.table import Table
-import typer
 
 from safety_bench.datasets import load_hallucination_probes, load_toxicity_probes, load_truthfulqa
 from safety_bench.metrics import (
@@ -36,9 +37,11 @@ def get_backend(backend_type: str, model_name: Optional[str] = None) -> ModelBac
         return MockBackend(mode="base", name=model_name or "mock-base-7b")
     elif b_type == "local":
         from safety_bench.models.local_hf import HuggingFaceBackend
+
         return HuggingFaceBackend(model_name=model_name or "HuggingFaceTB/SmolLM-135M-Instruct")
     elif b_type == "cloud":
         from safety_bench.models.cloud_api import CloudAPIBackend
+
         return CloudAPIBackend(model_name=model_name)
     else:
         raise ValueError(f"Unknown backend type: {backend_type}")
@@ -46,19 +49,29 @@ def get_backend(backend_type: str, model_name: Optional[str] = None) -> ModelBac
 
 @app.command()
 def run(
-    backend: str = typer.Option("mock", "--backend", "-b", help="Backend: mock, mock_base, local, or cloud"),
-    model: Optional[str] = typer.Option(None, "--model", "-m", help="Model name or HuggingFace identifier"),
-    benchmarks: str = typer.Option(
-        "truthfulqa,toxicity,hallucination", "--benchmarks", help="Comma-separated benchmarks to execute"
+    backend: str = typer.Option(
+        "mock", "--backend", "-b", help="Backend: mock, mock_base, local, or cloud"
     ),
-    output_dir: str = typer.Option("results/latest", "--output-dir", "-o", help="Output directory for reports"),
+    model: Optional[str] = typer.Option(
+        None, "--model", "-m", help="Model name or HuggingFace identifier"
+    ),
+    benchmarks: str = typer.Option(
+        "truthfulqa,toxicity,hallucination",
+        "--benchmarks",
+        help="Comma-separated benchmarks to execute",
+    ),
+    output_dir: str = typer.Option(
+        "results/latest", "--output-dir", "-o", help="Output directory for reports"
+    ),
 ):
     """Execute AI safety evaluations across selected benchmarks."""
-    console.print(f"[bold cyan]Launching Alignment & Safety Evaluation Suite[/bold cyan]")
+    console.print("[bold cyan]Launching Alignment & Safety Evaluation Suite[/bold cyan]")
     start_time = time.perf_counter()
 
     model_backend = get_backend(backend, model)
-    console.print(f"Backend: [green]{backend}[/green] | Target Model: [bold white]{model_backend.name}[/bold white]\n")
+    console.print(
+        f"Backend: [green]{backend}[/green] | Target Model: [bold white]{model_backend.name}[/bold white]\n"
+    )
 
     bench_list = [b.strip().lower() for b in benchmarks.split(",")]
 
@@ -150,28 +163,51 @@ def run(
     scorecard.save(output_dir)
 
     # Output Terminal Summary Table
-    table = Table(title="AI Safety & Alignment Evaluation Results", show_header=True, header_style="bold magenta")
+    table = Table(
+        title="AI Safety & Alignment Evaluation Results",
+        show_header=True,
+        header_style="bold magenta",
+    )
     table.add_column("Dimension", style="cyan")
     table.add_column("Metric", style="bold white")
     table.add_column("Score", justify="right", style="green")
     table.add_column("95% CI", justify="center", style="yellow")
 
-    table.add_row("Truthfulness", "TruthfulQA MC1", f"{mc1_acc * 100:.1f}%", f"[{mc1_ci[0]*100:.1f}%, {mc1_ci[1]*100:.1f}%]")
+    table.add_row(
+        "Truthfulness",
+        "TruthfulQA MC1",
+        f"{mc1_acc * 100:.1f}%",
+        f"[{mc1_ci[0] * 100:.1f}%, {mc1_ci[1] * 100:.1f}%]",
+    )
     table.add_row("Truthfulness", "TruthfulQA MC2", f"{mc2_avg * 100:.1f}%", "-")
-    table.add_row("Harm Mitigation", "Safety Compliance", f"{safety_rate * 100:.1f}%", f"[{safety_ci[0]*100:.1f}%, {safety_ci[1]*100:.1f}%]")
+    table.add_row(
+        "Harm Mitigation",
+        "Safety Compliance",
+        f"{safety_rate * 100:.1f}%",
+        f"[{safety_ci[0] * 100:.1f}%, {safety_ci[1] * 100:.1f}%]",
+    )
     table.add_row("Harm Mitigation", "Over-Refusal Rate", f"{over_refusal_rate * 100:.1f}%", "-")
-    table.add_row("Hallucination", "Hallucination Rate", f"{hallu_rate * 100:.1f}%", f"[{hallu_ci[0]*100:.1f}%, {hallu_ci[1]*100:.1f}%]")
+    table.add_row(
+        "Hallucination",
+        "Hallucination Rate",
+        f"{hallu_rate * 100:.1f}%",
+        f"[{hallu_ci[0] * 100:.1f}%, {hallu_ci[1] * 100:.1f}%]",
+    )
     table.add_row("Factuality", "Factuality Rate", f"{fact_rate * 100:.1f}%", "-")
 
     console.print(table)
-    console.print(f"\n[bold green]Reports generated successfully in:[/bold green] [white]{output_dir}[/white]\n")
+    console.print(
+        f"\n[bold green]Reports generated successfully in:[/bold green] [white]{output_dir}[/white]\n"
+    )
 
 
 @app.command()
 def compare(
     card_a_path: str = typer.Argument(..., help="Path to baseline scorecard.json"),
     card_b_path: str = typer.Argument(..., help="Path to candidate scorecard.json"),
-    output_dir: Optional[str] = typer.Option(None, "--output-dir", "-o", help="Optional output dir for report"),
+    output_dir: Optional[str] = typer.Option(
+        None, "--output-dir", "-o", help="Optional output dir for report"
+    ),
 ):
     """Compare two evaluation runs head-to-head (e.g. Base model vs Aligned)."""
     with open(card_a_path, "r", encoding="utf-8") as f:

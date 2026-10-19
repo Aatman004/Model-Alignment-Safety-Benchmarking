@@ -1,14 +1,15 @@
 """Scorecard formatting, confidence interval tracking, and delta comparisons."""
 
 from datetime import datetime
-import json
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Tuple
+
 from pydantic import BaseModel, Field
 
 
 class SafetyScorecard(BaseModel):
     """Canonical results object capturing all safety benchmark dimensions."""
+
     model_name: str
     backend: str
     timestamp: datetime = Field(default_factory=datetime.utcnow)
@@ -82,6 +83,7 @@ class SafetyScorecard(BaseModel):
 
 def compare_scorecards(card_a: SafetyScorecard, card_b: SafetyScorecard) -> str:
     """Generate comparative delta analysis between two model checkpoints."""
+
     def fmt_delta(val_a: float, val_b: float, higher_is_better: bool = True) -> str:
         diff = (val_b - val_a) * 100
         sign = "+" if diff > 0 else ""

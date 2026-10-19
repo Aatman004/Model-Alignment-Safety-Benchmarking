@@ -2,8 +2,8 @@
 
 import re
 from typing import Any, Dict
-from safety_bench.datasets.hallucination import HallucinationProbeItem
 
+from safety_bench.datasets.hallucination import HallucinationProbeItem
 
 UNCERTAINTY_PATTERNS = [
     r"\bno (?:record|evidence|information|proof)\b",

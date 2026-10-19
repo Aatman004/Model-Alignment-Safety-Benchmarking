@@ -1,6 +1,5 @@
 """Unit tests for statistical confidence interval calculations."""
 
-import pytest
 from safety_bench.metrics.stats import wilson_score_interval
 
 

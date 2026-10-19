@@ -1,6 +1,7 @@
 """Unit tests for scorecard serialization and comparison."""
 
 from pathlib import Path
+
 from safety_bench.reporter import SafetyScorecard, compare_scorecards
 
 
