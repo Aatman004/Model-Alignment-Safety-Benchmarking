@@ -1,0 +1,53 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "alignment-safety-benchmarking"
+version = "0.1.0"
+description = "Lightweight evaluation harness measuring truthfulness, hallucination rates, and toxicity in open-source and frontier models."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    { name = "Aatman Gupta", email = "aatmangupta8@gmail.com" }
+]
+keywords = [
+    "ai-safety",
+    "alignment-evaluations",
+    "truthfulqa",
+    "hallucination-benchmarking",
+    "toxicity-eval"
+]
+dependencies = [
+    "transformers>=4.40.0",
+    "torch>=2.2.0",
+    "datasets>=2.18.0",
+    "accelerate>=0.28.0",
+    "httpx>=0.27.0",
+    "pydantic>=2.7.0",
+    "numpy>=1.26.0",
+    "scipy>=1.12.0",
+    "rich>=13.7.0",
+    "typer>=0.12.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "ruff>=0.4.0",
+]
+
+[project.scripts]
+safety-bench = "safety_bench.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/safety_bench"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
